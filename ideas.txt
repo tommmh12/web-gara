@@ -1,0 +1,91 @@
+1. Mô hình tổng quan hệ thống
+Hệ thống gồm 3 nhóm người dùng chính:
+
+Khách hàng (chủ xe): đặt lịch, xem báo giá, theo dõi tình trạng sửa.
+
+Nhân viên gara (lễ tân/kỹ thuật): quản lý lịch, phân công thợ, cập nhật tiến độ.
+
+Quản lý gara: quản lý dịch vụ, bảng giá, kho phụ tùng, doanh thu, báo cáo.
+
+Chức năng chính chia thành 4 module: Đặt lịch online, Quản lý sửa chữa, Quản lý khách hàng & xe, Quản trị & báo cáo.
+
+2. Chức năng cho khách hàng
+Đăng ký/đăng nhập (email/phone, OTP).
+
+Quản lý nhiều xe: thêm xe, biển số, hãng, model, năm, số km, lịch sử bảo dưỡng.
+
+Đặt lịch sửa chữa/bảo dưỡng:
+
+Chọn gara (nếu hệ thống nhiều gara) hoặc mặc định.
+
+Chọn loại dịch vụ: thay dầu, bảo dưỡng định kỳ, sửa máy, điện, lốp, rửa xe…
+
+Chọn thời gian (xem lịch rảnh của gara, tránh trùng).
+
+Nhập mô tả lỗi, upload hình/clip tiếng kêu, đèn báo lỗi.
+
+Nhận báo giá sơ bộ: hệ thống tính theo loại xe + dịch vụ + thời gian dự kiến (giá range).
+
+Theo dõi trạng thái đơn:
+
+Các trạng thái: Chờ xác nhận, Đã nhận xe, Đang kiểm tra, Chờ duyệt báo giá, Đang sửa, Hoàn thành, Đã giao.
+
+Thông báo:
+
+Email/SMS/notification: xác nhận lịch, nhắc mang xe, báo xe sửa xong, nhắc bảo dưỡng định kỳ.
+
+Thanh toán:
+
+Thanh toán online (VNPay/MoMo giả lập) hoặc đánh dấu “thanh toán tại gara”.
+
+Đánh giá & review: sau khi hoàn thành, khách được đánh giá dịch vụ, kỹ thuật viên, thời gian chờ.
+
+3. Chức năng cho gara / nhân viên
+Dashboard lịch hẹn:
+
+Lịch dạng calendar (ngày/tuần), drag & drop để đổi giờ/sắp xếp thợ.
+
+Lọc theo trạng thái, loại dịch vụ, loại xe, kỹ thuật viên.
+
+Nhận và xử lý đơn:
+
+Xem chi tiết đơn, ảnh/video khách gửi.
+
+Xác nhận hoặc đề xuất đổi giờ, thêm ghi chú (thiếu phụ tùng, bận…).
+
+Quy trình sửa chữa:
+
+Tạo phiếu kiểm tra ban đầu, đề xuất hạng mục phải làm.
+
+Gửi báo giá chi tiết cho khách, khách nhấn “Đồng ý” online.
+
+Chia nhỏ công việc cho từng kỹ thuật viên; mỗi người cập nhật tiến độ.
+
+Quản lý kho phụ tùng (bản đơn giản trước):
+
+Danh mục phụ tùng: tên, mã, số lượng, giá nhập, giá bán.
+
+Trừ kho khi tạo hóa đơn dịch vụ, cảnh báo gần hết hàng.
+
+Hóa đơn & thanh toán:
+
+Tạo hóa đơn, in PDF, gửi qua email cho khách.
+
+Ghi nhận thanh toán tiền mặt/chuyển khoản/cổng thanh toán.
+
+4. Chức năng cho quản lý
+Quản lý dịch vụ:
+
+Thêm/sửa/xóa dịch vụ: tên, thời gian chuẩn, giá chuẩn, áp dụng cho loại xe nào.
+
+Quản lý nhân sự:
+
+Tài khoản, phân quyền (admin, lễ tân, kỹ thuật viên).
+
+Thống kê năng suất theo kỹ thuật viên (số xe, doanh thu, thời gian trung bình).
+
+Báo cáo:
+
+Doanh thu theo ngày/tháng/quý, theo loại dịch vụ, theo nguồn (web, walk-in).
+
+Top dịch vụ, giờ cao điểm, tỉ lệ khách quay lại.
