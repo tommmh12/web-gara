@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,14 +25,10 @@ public class VehicleController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<VehicleResponse>> createVehicle(
-            // @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestHeader(value = "X-Mock-User-Id", required = false) String mockUserId,
+            @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody VehicleRequest request) {
-        
-        // Use Mock UserId if Auth module is not ready yet
-        String ownerId = mockUserId != null ? mockUserId : request.getOwnerId();
             
-        VehicleResponse response = vehicleService.createVehicle(request, ownerId);
+        VehicleResponse response = vehicleService.createVehicle(request, userDetails.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created(response));
     }
 
@@ -50,8 +48,7 @@ public class VehicleController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<VehicleResponse>>> getMyVehicles(
-            // @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestHeader(value = "X-Mock-User-Id", required = true) String mockUserId,
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
@@ -61,7 +58,7 @@ public class VehicleController {
                 : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        PageResponse<VehicleResponse> response = vehicleService.getMyVehicles(mockUserId, pageable);
+        PageResponse<VehicleResponse> response = vehicleService.getMyVehicles(userDetails.getUsername(), pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

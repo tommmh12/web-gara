@@ -4,6 +4,8 @@ import com.webgara.common.dto.PageResponse;
 import com.webgara.common.exception.BadRequestException;
 import com.webgara.common.exception.ConflictException;
 import com.webgara.common.exception.ResourceNotFoundException;
+import com.webgara.module.user.model.User;
+import com.webgara.module.user.repository.UserRepository;
 import com.webgara.module.vehicle.dto.VehicleRequest;
 import com.webgara.module.vehicle.dto.VehicleResponse;
 import com.webgara.module.vehicle.mapper.VehicleMapper;
@@ -22,17 +24,22 @@ public class VehicleServiceImpl implements VehicleService {
 
     private final VehicleRepository vehicleRepository;
     private final VehicleMapper vehicleMapper;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
-    public VehicleResponse createVehicle(VehicleRequest request, String ownerId) {
+    public VehicleResponse createVehicle(VehicleRequest request, String userIdentifier) {
         if (vehicleRepository.existsByPlateNumber(request.getPlateNumber())) {
             throw new ConflictException("Vehicle with plate number " + request.getPlateNumber() + " already exists.");
         }
 
+        // Find user by email or phone to get userId
+        User user = userRepository.findByEmail(userIdentifier)
+                .or(() -> userRepository.findByPhone(userIdentifier))
+                .orElseThrow(() -> new ResourceNotFoundException("User", "identifier", userIdentifier));
+
         Vehicle vehicle = vehicleMapper.toEntity(request);
-        // Explicitly set the owner ID from the authenticated context usually
-        vehicle.setOwnerId(ownerId != null ? ownerId : request.getOwnerId());
+        vehicle.setOwnerId(user.getId());
         
         Vehicle savedVehicle = vehicleRepository.save(vehicle);
         return vehicleMapper.toResponse(savedVehicle);
@@ -62,8 +69,13 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public PageResponse<VehicleResponse> getMyVehicles(String ownerId, Pageable pageable) {
-        Page<Vehicle> vehiclePage = vehicleRepository.findByOwnerId(ownerId, pageable);
+    public PageResponse<VehicleResponse> getMyVehicles(String userIdentifier, Pageable pageable) {
+        // Find user by email or phone to get userId
+        User user = userRepository.findByEmail(userIdentifier)
+                .or(() -> userRepository.findByPhone(userIdentifier))
+                .orElseThrow(() -> new ResourceNotFoundException("User", "identifier", userIdentifier));
+        
+        Page<Vehicle> vehiclePage = vehicleRepository.findByOwnerId(user.getId(), pageable);
         
         return PageResponse.<VehicleResponse>builder()
                 .content(vehiclePage.getContent().stream().map(vehicleMapper::toResponse).toList())
