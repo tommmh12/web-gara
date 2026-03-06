@@ -14,6 +14,7 @@ import java.util.Optional;
 @Repository
 public interface PaymentRepository extends MongoRepository<Payment, String> {
     List<Payment> findByInvoiceId(String invoiceId);
+    Page<Payment> findByInvoiceId(String invoiceId, Pageable pageable);
     Page<Payment> findByCustomerId(String customerId, Pageable pageable);
     Page<Payment> findByGarageIdOrderByPaidAtDesc(String garageId, Pageable pageable);
     Optional<Payment> findByTransactionId(String transactionId);
