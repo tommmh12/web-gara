@@ -6,11 +6,16 @@ import com.webgara.module.inventory.dto.PartResponse;
 import com.webgara.module.inventory.dto.SupplierDTO;
 import com.webgara.module.inventory.model.Part;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface PartMapper {
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     Part toEntity(PartRequest request);
 
     PartResponse toResponse(Part part);
