@@ -1,39 +1,76 @@
-HELP.md
+# ===== BUILD =====
 target/
-.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+*.class
+*.jar
+*.war
+*.ear
 
-### STS ###
+# ===== MAVEN =====
+.mvn/wrapper/maven-wrapper.jar
+.mvn/timing.properties
+
+# ===== SPRING =====
+HELP.md
+spring-shell.log
+
+# ===== IDE — IntelliJ =====
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# ===== IDE — Eclipse / STS =====
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+# ===== IDE — VS Code =====
+.vscode/
 
-### NetBeans ###
+# ===== IDE — NetBeans =====
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-### VS Code ###
-.vscode/
+# ===== OS =====
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
 
-### Project specific ###
-uploads/
-*.env
+# ===== SECRETS & ENV =====
+.env
 .env.*
+*.env
 application-local.properties
+application-secret.properties
+secrets/
+
+# ===== UPLOADS / MEDIA =====
+uploads/
+static/uploads/
+
+# ===== LOGS =====
+*.log
+logs/
+
+# ===== DOCKER =====
+.docker/
+
+# ===== INTERNAL DOCS (không push lên repo) =====
+ideas.txt
+implementation-plan.md
+rules.md
+GIT_WORKFLOW.md
