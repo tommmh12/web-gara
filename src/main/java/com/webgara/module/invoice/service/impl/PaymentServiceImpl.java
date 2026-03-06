@@ -1,6 +1,5 @@
 package com.webgara.module.invoice.service.impl;
 
-import com.webgara.common.exception.BadRequestException;
 import com.webgara.common.exception.ResourceNotFoundException;
 import com.webgara.module.invoice.dto.PaymentCallbackRequest;
 import com.webgara.module.invoice.dto.PaymentRequest;
@@ -19,16 +18,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
-
     private final PaymentRepository paymentRepository;
     private final InvoiceRepository invoiceRepository;
     private final InvoiceService invoiceService;
@@ -39,16 +35,13 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentResponse createPayment(PaymentRequest request) {
         Invoice invoice = invoiceRepository.findById(request.getInvoiceId())
                 .orElseThrow(() -> new ResourceNotFoundException("Invoice", "id", request.getInvoiceId()));
-
         String transactionId = request.getTransactionId() != null ? request.getTransactionId() : UUID.randomUUID().toString();
         PaymentStatus status = PaymentStatus.PENDING;
         LocalDateTime paidAt = null;
-
         if (request.getMethod() == PaymentMethod.CASH || request.getMethod() == PaymentMethod.BANK_TRANSFER) {
             status = PaymentStatus.SUCCESS;
             paidAt = LocalDateTime.now();
         }
-
         Payment payment = Payment.builder()
                 .invoiceId(request.getInvoiceId())
                 .customerId(request.getCustomerId())
@@ -61,30 +54,24 @@ public class PaymentServiceImpl implements PaymentService {
                 .bankInfo(request.getBankInfo() != null ? paymentMapper.toBankInfoEntity(request.getBankInfo()) : null)
                 .paidAt(paidAt)
                 .build();
-
         Payment saved = paymentRepository.save(payment);
-
         if (status == PaymentStatus.SUCCESS) {
             BigDecimal totalPaid = paymentRepository.findByInvoiceId(request.getInvoiceId()).stream()
                     .filter(p -> p.getStatus() == PaymentStatus.SUCCESS)
                     .map(Payment::getAmount)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
-
             if (totalPaid.compareTo(invoice.getTotalAmount()) >= 0) {
                 invoiceService.markAsPaid(request.getInvoiceId());
             } else if (totalPaid.compareTo(BigDecimal.ZERO) > 0) {
                 invoiceService.markAsPartiallyPaid(request.getInvoiceId());
             }
         }
-
         PaymentResponse response = paymentMapper.toResponse(saved);
-        
         if (request.getMethod() == PaymentMethod.VNPAY) {
             response.setPaymentUrl(mockVNPayUrl(request.getInvoiceId(), request.getAmount()));
         } else if (request.getMethod() == PaymentMethod.MOMO) {
             response.setPaymentUrl(mockMoMoUrl(request.getInvoiceId(), request.getAmount()));
         }
-
         return response;
     }
 
@@ -93,37 +80,30 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentResponse processCallback(PaymentCallbackRequest callback) {
         Payment payment = paymentRepository.findByTransactionId(callback.getTransactionId())
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "transactionId", callback.getTransactionId()));
-
         payment.setStatus(callback.getStatus());
         payment.setGatewayResponse(callback.getGatewayResponse());
-
         if (callback.getStatus() == PaymentStatus.SUCCESS) {
             payment.setPaidAt(LocalDateTime.now());
-            
             Invoice invoice = invoiceRepository.findById(payment.getInvoiceId())
                     .orElseThrow(() -> new ResourceNotFoundException("Invoice", "id", payment.getInvoiceId()));
-            
             BigDecimal totalPaid = paymentRepository.findByInvoiceId(payment.getInvoiceId()).stream()
                     .filter(p -> p.getStatus() == PaymentStatus.SUCCESS)
                     .map(Payment::getAmount)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
-
             if (totalPaid.compareTo(invoice.getTotalAmount()) >= 0) {
                 invoiceService.markAsPaid(payment.getInvoiceId());
             } else if (totalPaid.compareTo(BigDecimal.ZERO) > 0) {
                 invoiceService.markAsPartiallyPaid(payment.getInvoiceId());
             }
         }
-
         Payment updated = paymentRepository.save(payment);
         return paymentMapper.toResponse(updated);
     }
 
     @Override
-    public List<PaymentResponse> listByInvoice(String invoiceId) {
-        return paymentRepository.findByInvoiceId(invoiceId).stream()
-                .map(paymentMapper::toResponse)
-                .toList();
+    public Page<PaymentResponse> listByInvoice(String invoiceId, Pageable pageable) {
+        Page<Payment> page = paymentRepository.findByInvoiceId(invoiceId, pageable);
+        return page.map(paymentMapper::toResponse);
     }
 
     @Override
