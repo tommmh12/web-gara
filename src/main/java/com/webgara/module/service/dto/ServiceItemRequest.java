@@ -36,5 +36,6 @@ public class ServiceItemRequest {
     @NotEmpty(message = "Pricing list cannot be empty")
     private List<ServiceItem.Pricing> pricing;
 
+    @Builder.Default
     private boolean isActive = true;
 }

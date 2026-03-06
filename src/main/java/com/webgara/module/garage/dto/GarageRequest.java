@@ -38,5 +38,6 @@ public class GarageRequest {
     
     private List<String> images;
 
+    @Builder.Default
     private boolean isActive = true;
 }
