@@ -115,9 +115,13 @@ auth, user, vehicle, garage, service, appointment, repair, inventory, invoice, p
 - Target: 80%+ coverage on service layer
 
 ## Git Conventions
+- **Gitflow branches:** `main` (production), `develop` (integration), `feature/*`, `release/*`, `hotfix/*`
 - Branch naming: `feature/module-name`, `fix/issue-description`, `hotfix/critical-fix`
 - Commit format: `type(scope): description` — e.g. `feat(appointment): add booking endpoint`
 - Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `style`
+- Never push directly to `main` or `develop` — always via Pull Request
+- Feature branches off `develop`, merge back to `develop`
+- Hotfix branches off `main`, merge to both `main` AND `develop`
 
 ## Docker
 - Development: `docker compose --profile dev up`
