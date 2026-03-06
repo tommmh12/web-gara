@@ -2,6 +2,7 @@ package com.webgara.module.vehicle.service.impl;
 
 import com.webgara.common.dto.PageResponse;
 import com.webgara.common.exception.BadRequestException;
+import com.webgara.common.exception.ConflictException;
 import com.webgara.common.exception.ResourceNotFoundException;
 import com.webgara.module.vehicle.dto.VehicleRequest;
 import com.webgara.module.vehicle.dto.VehicleResponse;
@@ -26,7 +27,7 @@ public class VehicleServiceImpl implements VehicleService {
     @Transactional
     public VehicleResponse createVehicle(VehicleRequest request, String ownerId) {
         if (vehicleRepository.existsByPlateNumber(request.getPlateNumber())) {
-            throw new BadRequestException("Vehicle with plate number " + request.getPlateNumber() + " already exists.");
+            throw new ConflictException("Vehicle with plate number " + request.getPlateNumber() + " already exists.");
         }
 
         Vehicle vehicle = vehicleMapper.toEntity(request);
