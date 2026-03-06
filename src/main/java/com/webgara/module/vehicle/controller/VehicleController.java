@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class VehicleController {
     private final VehicleService vehicleService;
 
     @PostMapping
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ApiResponse<VehicleResponse>> createVehicle(
             @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody VehicleRequest request) {
@@ -33,6 +35,7 @@ public class VehicleController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ApiResponse<VehicleResponse>> updateVehicle(
             @PathVariable String id,
             @Valid @RequestBody VehicleRequest request) {
@@ -41,12 +44,14 @@ public class VehicleController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'RECEPTIONIST', 'TECHNICIAN', 'MANAGER')")
     public ResponseEntity<ApiResponse<VehicleResponse>> getVehicleById(@PathVariable String id) {
         VehicleResponse response = vehicleService.getVehicleById(id);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ApiResponse<PageResponse<VehicleResponse>>> getMyVehicles(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(defaultValue = "0") int page,
@@ -63,12 +68,14 @@ public class VehicleController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ApiResponse<Void>> deleteVehicle(@PathVariable String id) {
         vehicleService.deleteVehicle(id);
         return ResponseEntity.ok(ApiResponse.success(null, "Vehicle deleted successfully"));
     }
     
     @PutMapping("/{id}/mileage")
+    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'TECHNICIAN', 'MANAGER')")
     public ResponseEntity<ApiResponse<VehicleResponse>> updateMileage(
             @PathVariable String id,
             @RequestParam Integer mileage) {

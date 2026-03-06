@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,14 +23,14 @@ public class GarageController {
     private final GarageService garageService;
 
     @PostMapping
-    // @PreAuthorize("hasRole('MANAGER')") -- Mocked out for Phase 1
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<ApiResponse<GarageResponse>> createGarage(@Valid @RequestBody GarageRequest request) {
         GarageResponse response = garageService.createGarage(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created(response));
     }
 
     @PutMapping("/{id}")
-    // @PreAuthorize("hasRole('MANAGER')") -- Mocked out for Phase 1
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<ApiResponse<GarageResponse>> updateGarage(
             @PathVariable String id,
             @Valid @RequestBody GarageRequest request) {
@@ -66,7 +67,7 @@ public class GarageController {
     }
 
     @DeleteMapping("/{id}")
-    // @PreAuthorize("hasRole('MANAGER')") -- Mocked out for Phase 1
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<ApiResponse<Void>> deleteGarage(@PathVariable String id) {
         garageService.deleteGarage(id);
         return ResponseEntity.ok(ApiResponse.success(null, "Garage deleted successfully"));

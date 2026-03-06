@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,14 +23,14 @@ public class ServiceCatalogController {
     private final ServiceCatalogService serviceCatalogService;
 
     @PostMapping
-    // @PreAuthorize("hasRole('MANAGER')") -- Mocked for Phase 1
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<ApiResponse<ServiceItemResponse>> createService(@Valid @RequestBody ServiceItemRequest request) {
         ServiceItemResponse response = serviceCatalogService.createService(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created(response));
     }
 
     @PutMapping("/{id}")
-    // @PreAuthorize("hasRole('MANAGER')") -- Mocked for Phase 1
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<ApiResponse<ServiceItemResponse>> updateService(
             @PathVariable String id,
             @Valid @RequestBody ServiceItemRequest request) {
@@ -77,7 +78,7 @@ public class ServiceCatalogController {
     }
 
     @DeleteMapping("/{id}")
-    // @PreAuthorize("hasRole('MANAGER')") -- Mocked for Phase 1
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<ApiResponse<Void>> deleteService(@PathVariable String id) {
         serviceCatalogService.deleteService(id);
         return ResponseEntity.ok(ApiResponse.success(null, "Service deleted successfully"));
