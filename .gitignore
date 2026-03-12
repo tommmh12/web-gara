@@ -10,6 +10,7 @@ build/
 *.war
 *.ear
 
+/.agent/
 # ===== MAVEN =====
 .mvn/wrapper/maven-wrapper.jar
 .mvn/timing.properties
@@ -54,6 +55,7 @@ desktop.ini
 .env
 .env.*
 *.env
+!.env.example
 application-local.properties
 application-secret.properties
 secrets/
@@ -74,3 +76,12 @@ ideas.txt
 implementation-plan.md
 rules.md
 GIT_WORKFLOW.md
+
+# ===== LOCAL RUNTIME / TEMP =====
+*.pid
+*.pid.lock
+*.seed
+*.tmp
+tmp/
+temp/
+.cache/
