@@ -77,6 +77,11 @@ implementation-plan.md
 rules.md
 GIT_WORKFLOW.md
 
+# ===== MARKDOWN DOCS =====
+*.md
+!README.md
+!readme.md
+
 # ===== LOCAL RUNTIME / TEMP =====
 *.pid
 *.pid.lock
